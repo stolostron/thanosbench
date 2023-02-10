@@ -146,6 +146,21 @@ var (
 	}
 )
 
+func profileFactory(profileType string, blockDurationList []int, rolloutInterval int, apps int, metricsPerApp int, customMetrics []string) PlanFn {
+	var ranges []time.Duration
+	for _, item := range blockDurationList {
+		ranges = append(ranges, time.Duration(item)*time.Hour)
+	}
+	switch profileType {
+	case "realisticK8s":
+		return realisticK8s(ranges, time.Duration(rolloutInterval), apps, metricsPerApp)
+	case "continuous":
+		return continuous(ranges, apps, metricsPerApp)
+	case "custom":
+		return custom_continuous(ranges, apps, customMetrics)
+	}
+}
+
 func realisticK8s(ranges []time.Duration, rolloutInterval time.Duration, apps int, metricsPerApp int) PlanFn {
 	return func(ctx context.Context, maxTime model.TimeOrDurationValue, extLset labels.Labels, blockEncoder func(BlockSpec) error) error {
 
@@ -230,7 +245,7 @@ func realisticK8s(ranges []time.Duration, rolloutInterval time.Duration, apps in
 	}
 }
 
-func cpudata(ranges []time.Duration, apps int, metricsPerApp int) PlanFn {
+func custom_continuous(ranges []time.Duration, apps int, metrics []string) PlanFn {
 	return func(ctx context.Context, maxTime model.TimeOrDurationValue, extLset labels.Labels, blockEncoder func(BlockSpec) error) error {
 
 		// Align timestamps as Prometheus would do.
@@ -276,6 +291,7 @@ func cpudata(ranges []time.Duration, apps int, metricsPerApp int) PlanFn {
 
 			s.Labels = labels.Labels{
 				{Name: "__name__", Value: fmt.Sprintf("node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate")},
+				// TODO: make this more like continuous, loop through metrics
 			}
 			s.MinTime = mint
 			s.MaxTime = maxt
