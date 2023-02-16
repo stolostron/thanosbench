@@ -133,33 +133,40 @@ var (
 			2 * time.Hour,
 			// 10,000 series per block.
 		}, 10000, 1),
-		"cpubench": cpudata([]time.Duration{
+		"cpubench": custom_continuous([]time.Duration{
 			// One week, from newest to oldest, in the same way Thanos compactor would do.
 			2 * time.Hour,
 			2 * time.Hour,
 			2 * time.Hour,
 			8 * time.Hour,
-			8 * time.Hour,
-			16 * time.Hour,
+			176 * time.Hour,
+			176 * time.Hour,
+			176 * time.Hour,
+			176 * time.Hour,
+			67 * 24 * time.Hour,
+			67 * 24 * time.Hour,
+			67 * 24 * time.Hour,
+			67 * 24 * time.Hour,
+			67 * 24 * time.Hour,
 			// 10,000 series per block.
-		}, 10000, 1),
+		}, 10000, []string{"metric1", "metric2", "metric3", "metric4", "metric5"}),
 	}
 )
 
-func profileFactory(profileType string, blockDurationList []int, rolloutInterval int, apps int, metricsPerApp int, customMetrics []string) PlanFn {
-	var ranges []time.Duration
-	for _, item := range blockDurationList {
-		ranges = append(ranges, time.Duration(item)*time.Hour)
-	}
-	switch profileType {
-	case "realisticK8s":
-		return realisticK8s(ranges, time.Duration(rolloutInterval), apps, metricsPerApp)
-	case "continuous":
-		return continuous(ranges, apps, metricsPerApp)
-	case "custom":
-		return custom_continuous(ranges, apps, customMetrics)
-	}
-}
+// func profileFactory(profileType string, blockDurationList []int, rolloutInterval int, apps int, metricsPerApp int, customMetrics []string) PlanFn {
+// 	var ranges []time.Duration
+// 	for _, item := range blockDurationList {
+// 		ranges = append(ranges, time.Duration(item)*time.Hour)
+// 	}
+// 	switch profileType {
+// 	case "realisticK8s":
+// 		return realisticK8s(ranges, time.Duration(rolloutInterval), apps, metricsPerApp)
+// 	case "continuous":
+// 		return continuous(ranges, apps, metricsPerApp)
+// 	case "custom":
+// 		return custom_continuous(ranges, apps, customMetrics)
+// 	}
+// }
 
 func realisticK8s(ranges []time.Duration, rolloutInterval time.Duration, apps int, metricsPerApp int) PlanFn {
 	return func(ctx context.Context, maxTime model.TimeOrDurationValue, extLset labels.Labels, blockEncoder func(BlockSpec) error) error {

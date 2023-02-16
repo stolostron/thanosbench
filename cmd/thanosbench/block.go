@@ -189,10 +189,10 @@ Example plan with generation:
 				return err
 			}
 
-			cyaml, err := parseFlagLabels(*configYaml)
-			if err != nil {
-				return err
-			}
+			// cyaml, err := parseFlagLabels(*configYaml)
+			// if err != nil {
+			// 	return err
+			// }
 
 			// TODO: import metrics from configYaml (demartial, decode, whatever)
 
