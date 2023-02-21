@@ -313,15 +313,16 @@ func custom_continuous(ranges []time.Duration, apps int, metrics []string) PlanF
 				},
 			}
 
-			s := common
+			for _, metric := range metrics {
+				s := common
 
-			s.Labels = labels.Labels{
-				{Name: "__name__", Value: fmt.Sprintf("node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate")},
-				// TODO: make this more like continuous, loop through metrics
+				s.Labels = labels.Labels{
+					{Name: "__name__", Value: metric},
+				}
+				s.MinTime = mint
+				s.MaxTime = maxt
+				b.Series = append(b.Series, s)
 			}
-			s.MinTime = mint
-			s.MaxTime = maxt
-			b.Series = append(b.Series, s)
 
 			if err := blockEncoder(b); err != nil {
 				return err
