@@ -361,11 +361,23 @@ func custom_continuous(ranges []time.Duration, apps int, metrics []string) PlanF
 				},
 			}
 
+			// append specific metric names
 			for _, metric := range metrics {
 				s := common
 
 				s.Labels = labels.Labels{
 					{Name: "__name__", Value: metric},
+				}
+				s.MinTime = mint
+				s.MaxTime = maxt
+				b.Series = append(b.Series, s)
+			}
+
+			// append 15 dummy labels for computation overhead
+			for i := 0; i < 15; i++ {
+				s := common
+				s.Labels = labels.Labels{
+					{Name: fmt.Sprintf("BenchLabel%d", i), Value: fmt.Sprintf("benchvalue%d", i)},
 				}
 				s.MinTime = mint
 				s.MaxTime = maxt
