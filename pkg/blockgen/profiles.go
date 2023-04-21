@@ -405,6 +405,10 @@ func custom_continuous(ranges []time.Duration, apps int, metrics []string) PlanF
 				s.MaxTime = maxt
 				b.Series = append(b.Series, s)
 			}
+
+			if err := blockEncoder(b); err != nil {
+				return err
+			}
 			maxt = mint
 		}
 		return nil
