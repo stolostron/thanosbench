@@ -319,6 +319,8 @@ var (
 			30 * time.Hour,
 		}, 7800, []string{
 			"kube_pod_container_resource_requests:sum",
+			"cluster_version",
+			"kube_pod_info",
 			"kube_node_status_allocatable",
 			"node_cpu_seconds_total",
 			"node_namespace_pod_container:container_cpu_usage_seconds_total:sum",
