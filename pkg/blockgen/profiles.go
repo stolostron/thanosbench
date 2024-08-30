@@ -270,6 +270,17 @@ func custom_continuous(ranges []time.Duration, apps int, metrics []string) PlanF
 			maxGauge = 8.0
 		}
 
+		numNamespacesStr := os.Getenv("NUM_NAMESPACES")
+		if numNamespacesStr == "" {
+			numNamespacesStr = "2"
+		}
+
+		numNamespaces, err := strconv.Atoi(numNamespacesStr)
+
+		if err != nil {
+			numNamespaces = 0
+		}
+
 		// Generate a random Jitter value between 1 and 10
 		randomJitter := rand.Intn(10) + 1
 
@@ -312,16 +323,22 @@ func custom_continuous(ranges []time.Duration, apps int, metrics []string) PlanF
 				},
 			}
 
-			// append specific metric names
+			// Append specific metric names and namespaces
 			for _, metric := range metrics {
-				s := common
+				for i := 0; i < numNamespaces; i++ {
 
-				s.Labels = labels.Labels{
-					{Name: "__name__", Value: metric},
+					namespace := fmt.Sprintf("Namespace %d", i)
+					s := common
+					s.Labels = labels.Labels{
+						{Name: "__name__", Value: metric},
+						{Name: "__namespace__", Value: namespace},
+					}
+
+					fmt.Println("Generating series with labels:", s.Labels)
+					s.MinTime = mint
+					s.MaxTime = maxt
+					b.Series = append(b.Series, s)
 				}
-				s.MinTime = mint
-				s.MaxTime = maxt
-				b.Series = append(b.Series, s)
 			}
 
 			if err := blockEncoder(b); err != nil {
