@@ -331,7 +331,7 @@ func custom_continuous(ranges []time.Duration, apps int, metrics []string) PlanF
 					s := common
 					s.Labels = labels.Labels{
 						{Name: "__name__", Value: metric},
-						{Name: "__namespace__", Value: namespace},
+						{Name: "namespace", Value: namespace},
 					}
 
 					s.MinTime = mint
