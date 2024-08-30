@@ -334,7 +334,6 @@ func custom_continuous(ranges []time.Duration, apps int, metrics []string) PlanF
 						{Name: "__namespace__", Value: namespace},
 					}
 
-					fmt.Println("Generating series with labels:", s.Labels)
 					s.MinTime = mint
 					s.MaxTime = maxt
 					b.Series = append(b.Series, s)
